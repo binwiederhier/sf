@@ -1,0 +1,13 @@
+Source: sf
+Section: misc
+Priority: optional
+Maintainer: Philipp Heckel <philipp.heckel@gmail.com>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.4
+Homepage: https://github.com/binwiederhier/sf
+
+Package: sf
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, sshfs
+Description: Easy SSHFS mount helper
+ Wrapper for sshfs to easily mount/unmount remote file systems via SSH.

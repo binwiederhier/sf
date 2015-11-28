@@ -1,0 +1,51 @@
+#!/bin/bash
+
+MNTROOT=~/Mounts
+ID_FILE=~/.ssh/id_rsa
+
+usage() {
+	echo "Usage: sf (mount|umount) [<user>@]<host>[:<port>]"
+}
+
+if [ -z "$2" ]; then
+	usage
+	exit 1
+fi
+
+action="$1"
+
+user="root"
+host="$2"
+port="22"
+
+if [[ "$host" == *"@"* ]]; then
+	user=$(echo "$host" | cut -d'@' -f 1)
+	host=$(echo "$host" | cut -d'@' -f 2)
+fi
+
+if [[ "$host" == *":"* ]]; then
+	port=$(echo "$host" | cut -d':' -f 2)
+	host=$(echo "$host" | cut -d':' -f 1)
+fi
+
+dir=$MNTROOT/${host}_${user}_${port}
+
+case "$action" in
+	mount)
+		mkdir -p "$dir" 2> /dev/null
+		sudo sshfs -o sshfs_debug,allow_other,IdentityFile=$ID_FILE,Port=$port $user@$host:/ "$dir"
+		rmdir $MNTROOT/* 2> /dev/null
+		;;
+
+	umount)
+		sudo umount "$dir"
+		sudo rmdir "$dir"
+		rmdir $MNTROOT/* 2> /dev/null
+		;;
+
+	*)
+		usage
+		exit 1
+		;;
+esac
+
